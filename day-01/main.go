@@ -51,45 +51,80 @@ func getNumber(word string) int {
 	return number
 }
 
-
-func parseWord(word string) (normalWordBuilder string) {
+func getFirstDigit(word string) string {
 	wordLen := len(word)
 	lowPtr := 0
 	for lowPtr < wordLen {
+		if unicode.IsDigit(rune(word[lowPtr])) {
+			return string(word[lowPtr])
+		}
 		tempPtr := lowPtr
-		foundNumber := false
+		numberWord := ""
 		for tempPtr < wordLen {
 			tempPtr += 1
 			tempWord := word[lowPtr: tempPtr]
-			numberWord := numberRepresentation[tempWord]
+			numberWord = numberRepresentation[tempWord]
 			if numberWord != "" {
-				normalWordBuilder += numberWord
-				foundNumber = true
 				break
 			}
 		}
 
-		if foundNumber == true {
-			lowPtr = tempPtr
-			continue
+		if numberWord != "" {
+			return numberWord
 		}
 
-		normalWordBuilder += string(word[lowPtr])
 		lowPtr += 1
 	}
 
-	//highPtr := wordLen - 1
-	//for highPtr >= 0 {
-	//	tempPtr := highPtr
-	//	foundNumber := false
-	//	for tempPtr >= 0 {
-	//		tempPtr -= 1
-	//		tempWord := word[tempPtr: highPtr+1]
-	//
-	//	}
-	//}
+	return "0"
+}
+
+func reverseString(word string) (output string) {
+	for _, character := range word {
+		output = string(character) + output
+	}
 
 	return 
+}
+
+func getSecondDigit(word string) string {
+	word = reverseString(word)
+	wordLen := len(word)
+	lowPtr := 0
+	for lowPtr < wordLen {
+		if unicode.IsDigit(rune(word[lowPtr])) {
+			return string(word[lowPtr])
+		}
+		tempPtr := lowPtr
+		numberWord := ""
+		for tempPtr < wordLen {
+			tempPtr += 1
+			tempWord := word[lowPtr: tempPtr]
+			tempWord = reverseString(tempWord)
+			numberWord = numberRepresentation[tempWord]
+			if numberWord != "" {
+				break
+			}
+		}
+
+		if numberWord != "" {
+			return numberWord
+		}
+
+		lowPtr += 1
+	}
+
+	return "0"
+}
+
+func getNumberByParseWord(word string) int {
+	numberBuilder := getFirstDigit(word) + getSecondDigit(word)
+	number, err := strconv.Atoi(numberBuilder)
+	if err != nil {
+		panic(err)
+	}
+	return number
+
 }
 
 func solve(part string, wordList ...string) (result int) {
@@ -99,7 +134,7 @@ func solve(part string, wordList ...string) (result int) {
 		}
 
 		if part == "2" {
-			result += getNumber(parseWord(value))
+			result += getNumberByParseWord(value)
 		}
 	}
 	return 
