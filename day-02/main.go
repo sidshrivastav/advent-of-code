@@ -8,9 +8,9 @@ import (
 )
 
 func isConfigurationPossible(game string) int {
-	red := 0
-	green := 0
-	blue := 0
+	red := 12 
+	green := 13
+	blue := 14
 	gameId := strings.Split(strings.Split(game, ":")[0], " ")[1]
 	gameData := strings.Split(strings.Split(game, ":")[1], ";")
 	for _, gameSet :=  range gameData {
@@ -21,26 +21,31 @@ func isConfigurationPossible(game string) int {
 				panic(err)
 			}
 			if gameCube[2] == "red" {
-				red += cubeCount
+				if cubeCount > red {
+					return 0
+				}
 			}
 			if gameCube[2] == "green" {
-				green += cubeCount
+				if cubeCount > green {
+					return 0
+				}
 			}
 			if gameCube[2] == "blue" {
-				blue += cubeCount
+				if cubeCount > blue {
+					return 0
+				}
 			}
 		}
 	}
+	
 
-	if red <= 12 && green <= 13 && blue <= 14 {
-		gameIdNumber, err := strconv.Atoi(gameId)
-		if err != nil {
-			panic(err)
-		}
-		return gameIdNumber
+	gameIdNumber, err := strconv.Atoi(gameId)
+	if err != nil {
+		panic(err)
 	}
 
-	return 0
+	return gameIdNumber
+
 }
 
 func solve(part string, gameRound []string) (result int) {
