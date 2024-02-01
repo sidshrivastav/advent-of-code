@@ -15,24 +15,28 @@ func getInput(inputFile string) ([]string) {
 	return input[:len(input) - 1]
 }
 
-func getPoints(cards []string) (points float64){
+func getPoints(cards []string) (points int){
 	for _, card := range cards {
 		allPoints := strings.Split(strings.Split(string(card), ":")[1], "|")
 		givenNumbers := strings.Split(strings.TrimSpace(allPoints[0]), " ")
 		winningNumbers := strings.Split(strings.TrimSpace(allPoints[1]), " ")
 		numbersWon := 0
 		for _, number := range givenNumbers {
-			// TODO: Implement a binary search, just from fun
-			for _, winningNumber := range winningNumbers {
-				if number == winningNumber {
-					numbersWon += 1
+			if number != "" {
+				// TODO: Implement a binary search, just from fun
+				for _, winningNumber := range winningNumbers {
+					if number == winningNumber {
+						numbersWon += 1
+						break
+					}
 				}
 			}
 		}
-		
+		earned := 0
 		if numbersWon > 0 {
-			points += math.Pow(2, float64(numbersWon - 1))
+			earned = int(math.Pow(2, float64(numbersWon - 1)))
 		}
+		points += earned
 	}
 	return
 }
@@ -40,5 +44,5 @@ func getPoints(cards []string) (points float64){
 func main() {
 	// Part 1
 	cards := getInput("input_1.txt")
-	fmt.Println(getPoints(cards))
+	fmt.Println(int(getPoints(cards)))
 }
