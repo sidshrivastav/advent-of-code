@@ -41,8 +41,17 @@ func getPoints(cards []string) (points int){
 	return
 }
 
+func getTotalScratchcards(card []string) (scratchcards int) {
+
+	return 
+}
+
 func main() {
 	// Part 1
 	cards := getInput("input_1.txt")
 	fmt.Println(int(getPoints(cards)))
+
+	// Part 2
+	cards = getInput("input_2.txt")
+	fmt.Println(int)
 }
