@@ -41,8 +41,47 @@ func getPoints(cards []string) (points int){
 	return
 }
 
-func getTotalScratchcards(card []string) (scratchcards int) {
+func min(num1 int, num2 int) int {
+	if num1 < num2 {
+		return num1
+	}
 
+	return num2
+}
+
+func getTotalScratchcards(cards []string) (scratchcards int) {
+	cardCount := map[int]int{}
+	for itr := 0; itr < len(cards); itr++ {
+		cardCount[itr] = 1 
+	}
+	for idx, card := range cards {
+		allPoints := strings.Split(strings.Split(string(card), ":")[1], "|")
+		givenNumbers := strings.Split(strings.TrimSpace(allPoints[0]), " ")
+		winningNumbers := strings.Split(strings.TrimSpace(allPoints[1]), " ")
+		numbersWon := 0
+		for _, number := range givenNumbers {
+			if number != "" {
+				// TODO: Implement a binary search, just from fun
+				for _, winningNumber := range winningNumbers {
+					if number == winningNumber {
+						numbersWon += 1
+						break
+					}
+				}
+			}
+		}
+		tempIdx := idx + 1
+		for tempIdx < len(cards) && numbersWon > 0 {
+			cardCount[tempIdx] += cardCount[idx]
+			tempIdx += 1
+			numbersWon -= 1
+
+		}
+	}
+  	
+	for _, instance := range cardCount {
+		scratchcards += instance
+	}
 	return 
 }
 
@@ -53,5 +92,5 @@ func main() {
 
 	// Part 2
 	cards = getInput("input_2.txt")
-	fmt.Println(int)
+	fmt.Println(getTotalScratchcards(cards))
 }
