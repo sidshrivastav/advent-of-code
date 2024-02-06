@@ -4,6 +4,7 @@ import "fmt"
 import "os"
 import "strings"
 import "strconv"
+import "math"
 
 func stringToIntArray(arr []string) (result []int) {
 	// Convert string values to integers
@@ -17,7 +18,52 @@ func stringToIntArray(arr []string) (result []int) {
 	return
 }
 
-func getInput(inputFile string) (map[string][][]int) {
+func getMapping(data [][]int) map[int]int {
+	mapping := make(map[int]int)
+	for _, value := range data {
+		for idx := 0; idx < value[2]; idx++ {
+			mapping[value[1]+idx] = value[0] + idx
+		}
+	}
+	return mapping
+}
+
+func getMappingValue(data map[int]int, key int) (int) {
+	val, ok := data[key]
+	if ok {
+		return val
+	}
+
+	return key
+}
+
+func getLowestLocation(data map[string][][]int) (int) {
+	lowest := math.MaxInt32
+	seedValues, ok := data["seeds"]
+	if ok {
+		delete(data, "seeds")
+	}
+	mapping := map[string]map[int]int{}
+	for key, value := range data {
+		mapping[key] = getMapping(value)
+	}
+	seeds := seedValues[0]
+	for _, seed := range seeds {
+		soil := getMappingValue(mapping["seed-to-soil map:"], seed)
+		fertilizer := getMappingValue(mapping["soil-to-fertilizer map:"], soil)
+		water := getMappingValue(mapping["fertilizer-to-water map:"], fertilizer)
+		light := getMappingValue(mapping["water-to-light map:"], water)
+		temp := getMappingValue(mapping["light-to-temperature map:"], light)
+		humidity := getMappingValue(mapping["temperature-to-humidity map:"], temp)
+		location := getMappingValue(mapping["humidity-to-location map:"], humidity)
+		if location < lowest {
+			lowest = location
+		}
+	}
+	return lowest
+}
+
+func parseInput(inputFile string) (map[string][][]int) {
 	output := map[string][][]int{}
 	content, err := os.ReadFile(inputFile)
 	if err != nil {
@@ -49,6 +95,6 @@ func getInput(inputFile string) (map[string][][]int) {
 
 func main() {
 	// Part 1
-	almanac := getInput("input_1.txt")
-	fmt.Println(almanac)
+	almanac := parseInput("input_1.txt")
+	fmt.Println(getLowestLocation(almanac))
 }
