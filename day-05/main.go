@@ -18,44 +18,42 @@ func stringToIntArray(arr []string) (result []int) {
 	return
 }
 
-func getMapping(data [][]int) map[int]int {
-	mapping := make(map[int]int)
-	for _, value := range data {
-		for idx := 0; idx < value[2]; idx++ {
-			mapping[value[1]+idx] = value[0] + idx
+func searchIndex(source int, length int, key int) int {
+	low := 0
+	high := length - 1
+	for low <= high {
+		mid := (low + high) / 2
+		if source + mid > key {
+			high -= 1
+		} else {
+			low += 1
 		}
 	}
-	return mapping
+	return high
 }
 
-func getMappingValue(data map[int]int, key int) (int) {
-	val, ok := data[key]
-	if ok {
-		return val
+func getMappingValue(data [][]int, key int) (int) {
+	for _, val := range data {
+		if val[1] <= key && key < val[1] + (val[2]) {
+			idx := searchIndex(val[1], val[2], key)
+			if idx != -1 {
+				return val[0] + idx
+			}
+		} 
 	}
-
 	return key
 }
 
 func getLowestLocation(data map[string][][]int) (int) {
 	lowest := math.MaxInt32
-	seedValues, ok := data["seeds"]
-	if ok {
-		delete(data, "seeds")
-	}
-	mapping := map[string]map[int]int{}
-	for key, value := range data {
-		mapping[key] = getMapping(value)
-	}
-	seeds := seedValues[0]
-	for _, seed := range seeds {
-		soil := getMappingValue(mapping["seed-to-soil map:"], seed)
-		fertilizer := getMappingValue(mapping["soil-to-fertilizer map:"], soil)
-		water := getMappingValue(mapping["fertilizer-to-water map:"], fertilizer)
-		light := getMappingValue(mapping["water-to-light map:"], water)
-		temp := getMappingValue(mapping["light-to-temperature map:"], light)
-		humidity := getMappingValue(mapping["temperature-to-humidity map:"], temp)
-		location := getMappingValue(mapping["humidity-to-location map:"], humidity)
+	for _, seed := range data["seeds"][0] {
+		soil := getMappingValue(data["seed-to-soil map:"], seed)
+		fertilizer := getMappingValue(data["soil-to-fertilizer map:"], soil)
+		water := getMappingValue(data["fertilizer-to-water map:"], fertilizer)
+		light := getMappingValue(data["water-to-light map:"], water)
+		temp := getMappingValue(data["light-to-temperature map:"], light)
+		humidity := getMappingValue(data["temperature-to-humidity map:"], temp)
+		location := getMappingValue(data["humidity-to-location map:"], humidity)
 		if location < lowest {
 			lowest = location
 		}
@@ -70,8 +68,7 @@ func parseInput(inputFile string) (map[string][][]int) {
 		panic(err)
 	}
 	input := strings.Split(string(content), "\n\n")
-	input = input[:len(input) - 1]
-	
+	input[len(input)-1] = input[len(input)-1][:len(input[len(input)-1]) - 1]
 	// Parse Seeds
 	seed := strings.Split(input[0], ":")
 	seedValues := strings.Split(strings.TrimSpace(seed[1]), " ")
